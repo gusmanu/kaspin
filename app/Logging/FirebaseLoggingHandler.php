@@ -41,10 +41,7 @@ class FirebaseLoggingHandler extends AbstractProcessingHandler
             $db = new FirestoreClient([
                 'keyFilePath' => base_path('firebase.json')
             ]);
-            $batch = $db->batch();
-            $logRef = $db->collection('kaspin_firebase')->document('kaspin_logs');
-            $batch->set($logRef, $data);
-            $batch->commit();
+            $db->collection('kaspin_logs')->add($data);
         } catch (\Exception $e){
             Log::critical($e->getMessage());
         }
