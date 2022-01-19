@@ -7,6 +7,7 @@ use App\Http\Requests\ProductFormRequest;
 use App\Product;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Validator;
 
 class ProductController extends Controller
@@ -18,7 +19,7 @@ class ProductController extends Controller
         $this->middleware('can:edit product')->only(['edit', 'editSave']);
         $this->middleware('can:delete product')->only(['delete']);
     }
-    
+
     /**
      * Display Table View
      */
@@ -32,6 +33,7 @@ class ProductController extends Controller
      */
     public function create()
     {
+        Log::channel('firebase')->info('activity_log');
         return view('create');
     }
 
@@ -41,6 +43,7 @@ class ProductController extends Controller
     public function createSave(ProductFormRequest $request)
     {
         $data = $request->validated();
+        Log::channel('firebase')->info('activity_log', $data);
         $createProduct = Product::create($data);
         if ($createProduct) {
             return redirect()->route('index')->withMessage('Produk berhasil dibuat');
@@ -53,6 +56,7 @@ class ProductController extends Controller
      */
     public function edit(Request $request)
     {
+        Log::channel('firebase')->info('activity_log');
         $id = request()->route('id');
         if (!is_numeric($id)) {
             return redirect()->route('index')->withErrors('ID Produk Invalid');
@@ -70,6 +74,7 @@ class ProductController extends Controller
     public function editSave(ProductFormRequest $request)
     {
         $updateData = $request->validated();
+        Log::channel('firebase')->info('activity_log', $updateData);
         try {
             DB::beginTransaction();
             $product = Product::where('id', $request->id)->lockForUpdate()->first();
@@ -90,6 +95,7 @@ class ProductController extends Controller
      */
     public function delete(Request $request)
     {
+        Log::channel('firebase')->info('activity_log');
         $validator = $this->validateIds($request->only('ids'));
         if ($validator->fails()) {
             return response()->json(['status' => 'fail', 'message' => $validator->getMessageBag()], 422);

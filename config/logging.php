@@ -47,6 +47,13 @@ return [
             'level' => 'debug',
         ],
 
+        'firebase' => [
+            'driver' => 'custom',
+            'path' => \App\Logging\FirebaseLoggingHandler::class,
+            'via' => \App\Logging\FirebaseCustomLogger::class,
+            'level' => 'debug',
+        ],
+
         'daily' => [
             'driver' => 'daily',
             'path' => storage_path('logs/laravel.log'),
